@@ -3,5 +3,14 @@
 
 class Net():
 
-    def close(self):
+    def start(self):
+        pass
+    
+    def poll(self):
+        pass
+        
+    def send(self, message):
+        pass
+    
+    def stop(self):
         pass

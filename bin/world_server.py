@@ -5,7 +5,7 @@ import sys
 
 server = manyworlds.server.Server()
 
-server.net = manyworlds.inet.Net(server)
+server.net = manyworlds.inet.Net(server, 6000)
 
 server.run()
 

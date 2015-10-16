@@ -19,6 +19,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.net, None)
     
     def test_run(self):
+        self.server.keep_running = False
         self.server.run()
         self.assertEqual(self.server.status, 0)
         

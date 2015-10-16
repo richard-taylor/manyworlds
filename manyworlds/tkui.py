@@ -18,8 +18,15 @@ class UI():
         self.label = tkinter.Label(self.window, text='0')
         self.label.pack()
         
-    def startEventLoop(self):
-        self.window.mainloop()
+        self.client = client
         
+    def startEventLoop(self):
+        self.window.after(1000, self.tick)
+        self.window.mainloop()
+    
+    def tick(self):
+        self.client.tick()
+        self.window.after(1000, self.tick)
+
     def updateClickCount(self, count):
         self.label.configure(text=str(count))

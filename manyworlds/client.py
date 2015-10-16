@@ -1,6 +1,8 @@
 ''' client module.
 '''
 
+import manyworlds.message
+
 class Client():
     def __init__(self):
         self.ui = None
@@ -12,9 +14,20 @@ class Client():
         print('click')
         self.clickCount += 1
         self.ui.updateClickCount(self.clickCount)
+        
+        data = self.clickCount.to_bytes(4, byteorder='big')
+        message = manyworlds.message.Message(None, ('127.0.0.1', 6000), data)
+        self.net.send(message)
     
+    def tick(self):
+        message = self.net.poll()
+        if message != None:
+            print('message "' + str(message.data) + '" received from', message.fromAddress)
+        
     def run(self):
         # start the networking threads
+        self.net.start()
+        
         # start the UI
         self.ui.startEventLoop()
         
@@ -22,4 +35,4 @@ class Client():
         self.shutdown()
         
     def shutdown(self):
-        self.net.close()
+        self.net.stop()
