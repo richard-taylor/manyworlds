@@ -18,9 +18,9 @@ class Reader(threading.Thread):
     def run(self):
         while (self.running):
             try:
-                data, address = self.socket.recvfrom(1024)
+                data, address = self.socket.recvfrom(manyworlds.message.MAX_PACKET_BYTES)
                 
-                message = manyworlds.message.Message(address, None, data)
+                message = manyworlds.message.Message(address, data)
                 self.inQueue.append(message)
             except socket.timeout:
                 pass    # there is no data to read yet
@@ -44,7 +44,7 @@ class Writer(threading.Thread):
         while (self.running):
             if len(self.outQueue) > 0:
                 message = self.outQueue.pop()
-                self.socket.sendto(message.data, message.toAddress)
+                self.socket.sendto(message.data, message.address)
         
     def send(self, message):
         self.outQueue.append(message)
@@ -56,7 +56,7 @@ class Net():
     '''
     Implementation of the inet interface using threads and sockets.
     '''
-    def __init__(self, client, listenPort):
+    def __init__(self, listenPort):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    # UDP socket
         self.socket.bind(("", listenPort))
         self.socket.settimeout(1)
@@ -78,6 +78,10 @@ class Net():
         self.writer.send(message)
         
     def stop(self):
-        self.reader.stop()
+        self.reader.stop()    # ask the threads to terminate
         self.writer.stop()
+        
+        self.reader.join()    # wait for the threads to terminate
+        self.writer.join()
+        
         self.socket.close()

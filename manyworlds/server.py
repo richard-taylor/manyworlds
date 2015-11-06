@@ -19,9 +19,9 @@ class Server():
             while self.keep_running:
                 message = self.net.poll()
                 if message != None:
-                    print('message "' + str(message.data) + '" received from', message.fromAddress)
+                    print('message "' + str(message.data) + '" received from', message.address)
                     data = bytes('thanks', 'utf-8')
-                    reply = manyworlds.message.Message(None, message.fromAddress, data)
+                    reply = manyworlds.message.Message(message.address, data)
                     self.net.send(reply)
                 time.sleep(1)
         except KeyboardInterrupt:

@@ -16,13 +16,13 @@ class Client():
         self.ui.updateClickCount(self.clickCount)
         
         data = self.clickCount.to_bytes(4, byteorder='big')
-        message = manyworlds.message.Message(None, ('127.0.0.1', 6000), data)
+        message = manyworlds.message.Message(('127.0.0.1', 6000), data)
         self.net.send(message)
     
     def tick(self):
         message = self.net.poll()
         if message != None:
-            print('message "' + str(message.data) + '" received from', message.fromAddress)
+            print('message "' + str(message.data) + '" received from', message.address)
         
     def run(self):
         # start the networking threads
