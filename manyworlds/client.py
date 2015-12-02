@@ -1,5 +1,6 @@
 ''' client module.
 '''
+import logging
 
 import manyworlds.message
 
@@ -7,6 +8,7 @@ class Client():
     def __init__(self):
         self.ui = None
         self.net = None
+        self.crypt = manyworlds.message.Crypt()     # uses toy encryption, replace with something better
         self.status = 0
         self.clickCount = 0
         
@@ -15,14 +17,18 @@ class Client():
         self.clickCount += 1
         self.ui.updateClickCount(self.clickCount)
         
-        data = self.clickCount.to_bytes(4, byteorder='big')
-        message = manyworlds.message.Message(('127.0.0.1', 6000), data)
-        self.net.send(message)
+        receiver = manyworlds.message.Talker(('127.0.0.1', 6000))   # this should come from the state
+        message = manyworlds.message.Message(self.clickCount)
+        
+        packet = self.crypt.encode(receiver, message)
+        self.net.send(packet)
     
     def tick(self):
-        message = self.net.poll()
-        if message != None:
-            print('message "' + str(message.data) + '" received from', message.address)
+        packet = self.net.poll()
+        if packet != None:
+            sender = manyworlds.message.Talker(packet.address)    # this should come from a service
+            message = self.crypt.decode(sender, packet)
+            logging.info('message "' + str(message.number) + '" received from' + str(packet.address))
         
     def run(self):
         # start the networking threads

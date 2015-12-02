@@ -20,10 +20,13 @@ class Reader(threading.Thread):
             try:
                 data, address = self.socket.recvfrom(manyworlds.message.MAX_PACKET_BYTES)
                 
-                message = manyworlds.message.Message(address, data)
-                self.inQueue.append(message)
+                packet = manyworlds.message.Packet(address, data)
+                self.inQueue.append(packet)
+                
             except socket.timeout:
                 pass    # there is no data to read yet
+            except ConnectionResetError:
+                pass    # on Windows if there is no server running on this machine
     
     def poll(self):
         if len(self.inQueue) > 0:
@@ -43,11 +46,11 @@ class Writer(threading.Thread):
     def run(self):
         while (self.running):
             if len(self.outQueue) > 0:
-                message = self.outQueue.pop()
-                self.socket.sendto(message.data, message.address)
+                packet = self.outQueue.pop()
+                self.socket.sendto(packet.data, packet.address)
         
-    def send(self, message):
-        self.outQueue.append(message)
+    def send(self, packet):
+        self.outQueue.append(packet)
             
     def stop(self):
         self.running = False
@@ -74,8 +77,8 @@ class Net():
         '''
         return self.reader.poll()
         
-    def send(self, message):
-        self.writer.send(message)
+    def send(self, packet):
+        self.writer.send(packet)
         
     def stop(self):
         self.reader.stop()    # ask the threads to terminate

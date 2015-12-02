@@ -1,10 +1,11 @@
 
+import argparse
+import logging
+import sys
+
 import manyworlds.client
 import manyworlds.inet
 import manyworlds.tkui
-
-import argparse
-import sys
 
 # parse the command-line
 
@@ -14,6 +15,9 @@ parser.add_argument('-p', '--port',
     default=6001, type=int)
 
 args = parser.parse_args()
+
+# turn on logging
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
 # apply command-line parameters to the client
 
