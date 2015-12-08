@@ -28,7 +28,7 @@ class Client():
         if packet != None:
             sender = manyworlds.message.Talker(packet.address)    # this should come from a service
             message = self.crypt.decode(sender, packet)
-            logging.info('message "' + str(message.number) + '" received from' + str(packet.address))
+            logging.info('message "' + str(message.number) + '" received from ' + str(packet.address))
         
     def run(self):
         # start the networking threads

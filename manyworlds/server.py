@@ -24,13 +24,12 @@ class Server():
                     sender = manyworlds.message.Talker(packet.address)    # this should come from a service
                     message = self.crypt.decode(sender, packet)
                     
-                    logging.info('message "' + str(message.number) + '" received from' + str(packet.address))
+                    logging.info('message "' + str(message.number) + '" received from ' + str(packet.address))
 
                     reply = manyworlds.message.Message(999)
                     packet = self.crypt.encode(sender, reply)
                     self.net.send(packet)
-                    
-                time.sleep(1)
+
         except KeyboardInterrupt:
             pass
             

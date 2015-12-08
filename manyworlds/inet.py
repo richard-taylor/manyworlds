@@ -18,7 +18,7 @@ class Reader(threading.Thread):
     def run(self):
         while (self.running):
             try:
-                data, address = self.socket.recvfrom(manyworlds.message.MAX_PACKET_BYTES)
+                data, address = self.socket.recvfrom(manyworlds.message.Packet.MAX_BYTES)
                 
                 packet = manyworlds.message.Packet(address, data)
                 self.inQueue.append(packet)
