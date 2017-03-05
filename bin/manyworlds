@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import argparse
+import logging
+import os.path
+import sys
+
+import manyworlds.inet
+import manyworlds.peer
+
+# parse the command-line
+parser = argparse.ArgumentParser(description='manyworlds peer')
+
+parser.add_argument('-p', '--port', 
+    help='port number to listen on (default %(default)s)',
+    default=6001, type=int)
+    
+parser.add_argument('-u', '--ui', 
+    help='user interface for driving (default %(default)s)',
+    default='tk', type=str)
+    
+args = parser.parse_args()
+
+# turn on logging
+logfile = os.path.join(
+    os.getenv('LOGDIR', '/tmp'), 'many-' + str(args.port) + '.log')
+
+logging.basicConfig(
+    filename=logfile,
+    format='%(asctime)s %(levelname)s %(message)s',
+    level=logging.INFO)
+
+# apply command-line parameters to a peer object
+peer = manyworlds.peer.Peer()
+
+peer.net = manyworlds.inet.Net(args.port)
+
+if args.ui == 'tk':
+    import manyworlds.tkui
+    peer.ui = manyworlds.tkui.UI(peer)
+else:
+    import manyworlds.headless
+    peer.ui = manyworlds.headless.UI(peer)
+    
+peer.run()
+
+sys.exit(peer.status)
