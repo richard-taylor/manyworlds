@@ -9,8 +9,12 @@ import manyworlds.inet
 import manyworlds.peer
 
 # parse the command-line
-parser = argparse.ArgumentParser(description='manyworlds peer')
+parser = argparse.ArgumentParser(description='manyworlds')
 
+parser.add_argument('-n', '--nick', 
+    help='nickname for this manyworlds peer (default %(default)s)',
+    default='Lila', type=str)
+    
 parser.add_argument('-p', '--port', 
     help='port number to listen on (default %(default)s)',
     default=6001, type=int)
@@ -31,7 +35,7 @@ logging.basicConfig(
     level=logging.INFO)
 
 # apply command-line parameters to a peer object
-peer = manyworlds.peer.Peer()
+peer = manyworlds.peer.Peer(args.nick)
 
 peer.net = manyworlds.inet.Net(args.port)
 

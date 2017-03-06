@@ -2,6 +2,7 @@
 '''
 
 import collections
+import logging
 import socket
 import threading
 import time
@@ -26,7 +27,7 @@ class Reader(threading.Thread):
             except socket.timeout:
                 pass    # there is no data to read yet
             except ConnectionResetError:
-                pass    # on Windows if there is no server running on this machine
+                pass    # on Windows if there is no listener running on this machine
     
     def poll(self):
         if len(self.inQueue) > 0:
@@ -66,6 +67,8 @@ class Net():
         
         self.reader = Reader(self.socket)
         self.writer = Writer(self.socket)
+        
+        logging.info("listening on port " + str(listenPort))
     
     def start(self):
         self.reader.start()
@@ -73,11 +76,14 @@ class Net():
     
     def poll(self):
         '''
-        Poll to see if there is a message waiting to be read.
+        Poll to see if there is a packet waiting to be read.
         '''
         return self.reader.poll()
         
     def send(self, packet):
+        '''
+        Queue a packet for writing as soon as possible.
+        '''
         self.writer.send(packet)
         
     def stop(self):

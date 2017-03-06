@@ -14,12 +14,14 @@ class Peer():
     peer class regularly enough to send and receive messages.
     '''
     
-    def __init__(self):
+    def __init__(self, nickname):
+        self.nickname = nickname
         self.ui = None
         self.net = None
         self.crypt = manyworlds.message.Crypt()     # uses toy encryption, replace with something better
         self.status = 0
         self.clickCount = 0
+        logging.info("created a peer called " + nickname)
         
     def button_callback(self):
         print('click')
